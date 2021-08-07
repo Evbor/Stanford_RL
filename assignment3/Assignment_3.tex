@@ -1,0 +1,145 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\author{Evan Borras}
+\title{Assignment 3 Writeup}
+
+\begin{document}
+
+\maketitle
+
+\section*{Policy Gradient Methods: Writeup}
+% TODO: Run Algo, screenshot graphs, add graphs and report results here
+\section*{Best Arm Identification in Multiarmed Bandit}
+% TODO: Add question Setup
+\subsection*{(a)}
+
+Prove: $\mathrm{Pr}\left(\exists a \in \mathcal{A} \; \; s.t. \, \left|\hat{r}_{a} - \bar{r}_{a} \right| > \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \right) < A\delta$ \\ 
+
+Define: $A_{a} = |\hat{r}_{a} - \bar{r}_{a}| > \sqrt{\frac{\log (2/\delta)}{2n_{des}}}$
+
+$\mathrm{Pr}\left(\exists a \in \mathcal{A} \; \; s.t. \, \left|\hat{r}_{a} - \bar{r}_{a} \right| > \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \right) = \mathrm{Pr}\left(\exists a \in \mathcal{A} \; \; s.t. \, A_{a}\right) = \mathrm{Pr}\left(\bigcup\limits_{a \in \mathcal{A}} A_{a} \right)$
+
+$\mathrm{Pr}\left(\bigcup\limits_{a \in \mathcal{A}} A_{a}\right) = \sum\limits_{a \in \mathcal{A}} \mathrm{Pr}\left(A_{a}\right) = \sum\limits_{a \in \mathcal{A}} \mathrm{Pr}\left(|\hat{r}_{a} - \bar{r}_{a}| > \sqrt{\frac{\log (2/\delta)}{2n_{des}}}\right)$
+
+Using Hoeffding's inequality: $\mathrm{Pr}\left(|\hat{x} - \bar{x}| > \sqrt{\frac{\log (2/\delta)}{2n}}\right) < \delta$
+
+
+$\sum\limits_{a \in \mathcal{A}} \mathrm{Pr}\left(|\hat{r}_{a} - \bar{r}_{a}| > \sqrt{\frac{\log (2/\delta)}{2n_{des}}}\right) < \sum\limits_{a \in \mathcal{A}} \delta = A\delta$
+
+Therefore: $\mathrm{Pr}\left(\exists a \in \mathcal{A} \; \; s.t. \, \left|\hat{r}_{a} - \bar{r}_{a} \right| > \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \right) < A\delta$ \\
+
+QED
+ 
+\subsection*{(b)}
+Given a margin of error $\epsilon$ and a probability of failure $\delta'$. What value of $n_{des}$ assures: $\mathrm{Pr}\left(\bar{r}_{a^{\dagger}} \geq \bar{r}_{a^{\star}} - \epsilon\right) \geq 1 - \delta'$ (What value of $n_{des}$ assures $\epsilon$ \textbf{is} a margin of error, and $\delta'$ \textbf{is} a probability for our margin of error). Where $a^{\dagger} = argmax_{a}(\hat{r}_{a})$ and $a^{\star} = argmax_{a}(\bar{r}_{a})$ \\
+
+\noindent Rewriting Prompt: \\
+
+\noindent Given $\epsilon$ and $\delta'$. What value of $n_{des}$ assures: $\mathrm{Pr}\left(\bar{r}_{a^{\star}} - \bar{r}_{a^{\dagger}} \leq  \epsilon\right) \geq 1 - \delta'$. \\
+
+\noindent Rewriting Prompt Again: \\
+
+\noindent Define: Event $O' = \bigg\{\hat{r}_{a} | \bar{r}_{a^{\star}} - \bar{r}_{a^{\dagger}} \leq \epsilon\bigg\}$ \\
+
+\noindent Given $\epsilon$ and $\delta'$. What value of $n_{des}$ assures: $\mathrm{Pr}\left(O'\right) \geq 1 - \delta'$ \\
+
+\textit{Section 1}
+
+From part (a), bound: $\mathrm{Pr}\left(\exists a \in \mathcal{A} \; \; s.t. \, \left|\hat{r}_{a} - \bar{r}_{a} \right| > \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \right) < A\delta$ is true.
+
+taking the complement 
+
+bound: $\mathrm{Pr}\left(\forall a \in \mathcal{A} \left(\left|\hat{r}_{a} - \bar{r}_{a} \right| \leq \sqrt{\frac{\log (2/\delta)}{2n_{des}}}\right) \right) \geq 1 - A\delta$ is true as well.
+
+Define: Event $O = \left\{\hat{r}_{a} | \forall a \in \mathcal{A} \left(\left|\hat{r}_{a} - \bar{r}_{a} \right| \leq \sqrt{\frac{\log (2/\delta)}{2n_{des}}}\right)\right\}$.
+
+Therefore: 
+
+From part (a), bound: $\mathrm{Pr}\left(O\right) \geq 1 - A\delta$ is true for our scenario.\\
+
+\textit{Section 2}
+
+Assume Event $O$ has taken place, therefore $\forall a \in \mathcal{A} \left(\left|\hat{r}_{a} - \bar{r}_{a} \right| \leq \sqrt{\frac{\log (2/\delta)}{2n_{des}}}\right)$
+
+Choosing $a = a^{\dagger} = argmax_{a}(\hat{r}_{a})$, and $a = a^{\star} = argmax_{a}(\bar{r}_{a})$ implies:
+
+$$\text{1) } \left|\hat{r}_{a^{\dagger}} - \bar{r}_{a^{\dagger}} \right| \leq \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \text{ and 2) } \left|\hat{r}_{a^{\star}} - \bar{r}_{a^{\star}} \right| \leq \sqrt{\frac{\log (2/\delta)}{2n_{des}}}$$
+
+From the above we get: 
+
+$$\text{1) } \hat{r}_{a^{\dagger}} - \bar{r}_{a^{\dagger}} \leq \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \text{ and } \hat{r}_{a^{\dagger}} - \bar{r}_{a^{\dagger}} \geq -\sqrt{\frac{\log (2/\delta)}{2n_{des}}}$$
+
+$$\text{2) } \hat{r}_{a^{\star}} - \bar{r}_{a^{\star}} \leq \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \text{ and } \hat{r}_{a^{\star}} - \bar{r}_{a^{\star}} \geq -\sqrt{\frac{\log (2/\delta)}{2n_{des}}}$$
+
+Rewritting results: 
+
+$$\text{1) } \bar{r}_{a^{\dagger}} \geq \hat{r}_{a^{\dagger}} - \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \text{ and } \bar{r}_{a^{\dagger}} \leq \hat{r}_{a^{\dagger}} + \sqrt{\frac{\log (2/\delta)}{2n_{des}}}$$ 
+
+$$\text{2) } \bar{r}_{a^{\star}} \geq \hat{r}_{a^{\star}} - \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \text{ and } \bar{r}_{a^{\star}} \leq \hat{r}_{a^{\star}} + \sqrt{\frac{\log (2/\delta)}{2n_{des}}}$$ 
+
+By def: $\bar{r}_{a^{\star}} \geq \bar{r}_{a^{\dagger}}$ since $a^{\star} = argmax_{a}(\bar{r}_{a}) \implies \bar{r}_{a^{\star}} \geq \bar{r}_{a^{\dagger}} \geq \hat{r}_{a^{\dagger}} - \sqrt{\frac{\log (2/\delta)}{2n_{des}}}$
+
+$$\implies \text{1) } \bar{r}_{a^{\star}} \geq \hat{r}_{a^{\dagger}} - \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \text{ and } \bar{r}_{a^{\dagger}} \leq \hat{r}_{a^{\dagger}} + \sqrt{\frac{\log (2/\delta)}{2n_{des}}}$$
+
+Subtracting the second inequality from the first yields:
+
+$$\text{a) } \bar{r}_{a^{\star}} - \bar{r}_{a^{\dagger}} \geq -2 \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \text{ under Event $O$}$$
+
+Also \\ 
+
+By def: $\hat{r}_{a^{\dagger}} \geq \hat{r}_{a^{\star}}$ since $a^{\dagger} = argmax_{a}(\hat{r}_{a}) \implies \hat{r}_{a^{\star}} \leq \hat{r}_{a^{\dagger}} \leq \bar{r}_{a^{\dagger}} + \sqrt{\frac{\log (2/\delta)}{2n_{des}}}$
+
+$$\implies \text{1) } \bar{r}_{a^{\dagger}} \geq \hat{r}_{a^{\star}} - \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \text{ and } \bar{r}_{a^{\dagger}} \leq \hat{r}_{a^{\dagger}} + \sqrt{\frac{\log (2/\delta)}{2n_{des}}}$$
+
+$$\text{2) } \bar{r}_{a^{\star}} \geq \hat{r}_{a^{\star}} - \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \text{ and } \bar{r}_{a^{\star}} \leq \hat{r}_{a^{\star}} + \sqrt{\frac{\log (2/\delta)}{2n_{des}}}$$ 
+
+Subtracting the first inequality of 1) from the second inequality of 2) yields:
+
+$$\text{b) } \hat{r}_{a^{\star}} - \hat{r}_{a^{\dagger}} \leq 2 \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \text{ under Event $O$}$$
+
+Compressing a) and b) yields:
+
+$$-2 \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \leq \hat{r}_{a^{\star}} - \hat{r}_{a^{\dagger}} \leq 2 \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \text{ under Event $O$}$$
+\begin{center}
+or
+\end{center}
+$$\left|\hat{r}_{a^{\star}} - \hat{r}_{a^{\dagger}}\right| \leq 2 \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \text{ under Event $O$}$$ \\
+
+\textit{Section 3}
+
+If we choose to lower bound $\epsilon$ by $2 \sqrt{\frac{\log (2/\delta)}{2n_{des}}}$ then $2 \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \leq \epsilon$ \\
+
+$\implies \hat{r}_{a^{\star}} - \hat{r}_{a^{\dagger}} \leq 2 \sqrt{\frac{\log (2/\delta)}{2n_{des}}} \leq \epsilon \text{ under Event $O$}$ \\
+
+$\implies \hat{r}_{a^{\star}} - \hat{r}_{a^{\dagger}} \leq \epsilon \text{ under Event $O$}$ \\
+
+$\implies$ Event $O'$ under Event $O$ \\
+
+Asserting this constraint on $\epsilon$ implies Event $O'$ occurs only when Event $O$ \indent occurs.\\
+
+$\implies \mathrm{Pr}\left(O'\right) = \mathrm{Pr}\left(O\right) \geq 1 - A\delta$ \\
+
+$\implies \mathrm{Pr}\left(O'\right) \geq 1 - A\delta$ \\
+
+If we choose to constrain $\delta'$ to $\delta' = A\delta$ then
+
+$$\mathrm{Pr}\left(O'\right) \geq 1 - \delta' \text{ when $\epsilon \geq 2 \sqrt{\frac{\log (2/\delta)}{2n_{des}}}$, and $\delta' = A\delta$}$$
+
+\textit{Section 4}
+
+$$\delta = \frac{\delta'}{A} \implies \epsilon \geq 2 \sqrt{\frac{\log (2A/\delta')}{2n_{des}}}$$
+
+$$\epsilon^{2} \geq \frac{2 \log (2A/\delta')}{n_{des}}$$
+
+$$n_{des} \geq \frac{2 \log (2A/\delta')}{\epsilon^{2}}$$
+
+Therefore: \\
+
+Given a margin of error $\epsilon$ and a probability of failure $\delta'$. $n_{des} \geq \frac{2 \log (2A/\delta')}{\epsilon^{2}}$ assures: $\mathrm{Pr}\left(\bar{r}_{a^{\dagger}} \geq \bar{r}_{a^{\star}} - \epsilon\right) \geq 1 - \delta'$. For $a^{\dagger} = argmax_{a}(\hat{r}_{a})$, $a^{\star} = argmax_{a}(\bar{r}_{a})$, and $A=|\mathcal{A}|$ \\
+
+QED
+
+\end{document}

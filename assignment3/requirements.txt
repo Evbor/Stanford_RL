@@ -1,0 +1,8 @@
+numpy==1.16.0
+tensorflow==1.15.4
+gym==0.9.1
+scipy==1.2.0
+mujoco-py==0.5.7
+matplotlib==3.0.2
+pybullet
+#gym
